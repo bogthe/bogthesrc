@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/bogthe/bogthesrc/app"
 )
 
 type subcmd struct {
@@ -65,6 +67,9 @@ func main() {
 func serveCmd(args []string) {
 	fs := flag.NewFlagSet("serve", flag.ExitOnError)
 	port := fs.String("port", ":5000", "Port to listen to")
+	staticDir := fs.String("staticDir", ".", "Static assets directory")
+	templateDir := fs.String("templateDir", ".", "Templates directory")
+	reloadTemplates := fs.Bool("reloadTemplates", true, "Reloads templates on every request")
 
 	fs.Usage = func() {
 		fmt.Fprintln(os.Stderr, `usage bogthesrc serve [options]
@@ -83,10 +88,12 @@ The options are:
 		fs.Usage()
 	}
 
+	app.ReloadTemplates = *reloadTemplates
+	app.StaticDir = *staticDir
+	app.TemplateDir = *templateDir
+
 	handler := http.NewServeMux()
-	handler.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello"))
-	})
+	handler.Handle("/", app.Handler())
 
 	log.Print("Listening on ", *port)
 	err := http.ListenAndServe(*port, handler)
