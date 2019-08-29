@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/bogthe/bogthesrc/app"
 )
@@ -67,8 +68,8 @@ func main() {
 func serveCmd(args []string) {
 	fs := flag.NewFlagSet("serve", flag.ExitOnError)
 	port := fs.String("port", ":5000", "Port to listen to")
-	staticDir := fs.String("staticDir", ".", "Static assets directory")
-	templateDir := fs.String("templateDir", ".", "Templates directory")
+	staticDir := fs.String("staticDir", "./static", "Static assets directory")
+	templateDir := fs.String("templateDir", "./tmpl", "Templates directory")
 	reloadTemplates := fs.Bool("reloadTemplates", true, "Reloads templates on every request")
 
 	fs.Usage = func() {
@@ -89,8 +90,15 @@ The options are:
 	}
 
 	app.ReloadTemplates = *reloadTemplates
-	app.StaticDir = *staticDir
-	app.TemplateDir = *templateDir
+
+	static, errStatic := filepath.Abs(*staticDir)
+	tmpl, errTemplate := filepath.Abs(*templateDir)
+	if errStatic != nil || errTemplate != nil {
+		fs.Usage()
+	}
+
+	app.StaticDir = static
+	app.TemplateDir = tmpl
 
 	handler := http.NewServeMux()
 	handler.Handle("/", app.Handler())

@@ -33,7 +33,7 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	runHandler(w, r, h)
 }
 
-func runHandler(w http.ResponseWriter, r *http.Request, fn func(w http.ResponseWriter, r *http.Request) error) {
+func runHandler(w http.ResponseWriter, r *http.Request, fn handler) {
 	defer func() {
 		if rv := recover(); rv != nil {
 			err := errors.New("runHandler error")
