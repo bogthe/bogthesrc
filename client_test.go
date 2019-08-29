@@ -1,25 +1,51 @@
 package bogthesrc
 
 import (
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
 	"testing"
 )
 
-func TestClientBasics(t *testing.T) {
-	t.Run("Can create a new request", func(t *testing.T) {
-		c := NewClient(nil)
-		req, err := c.NewRequest("GET", "posts")
-		ua := req.Header.Get("User-Agent")
+var (
+	mux    *http.ServeMux
+	client *Client
+	server *httptest.Server
+)
 
-		if req.Method != "GET" {
-			t.Errorf("Unexpected method, got: %s", req.Method)
-		}
+func setup() {
+	mux = http.NewServeMux()
+	server = httptest.NewServer(mux)
 
-		if ua != userAgent {
-			t.Errorf("Unexpected UA, got: %s", ua)
-		}
+	client = NewClient(nil)
+	baseUrl, _ := url.Parse(server.URL)
+	client.BaseUrl = baseUrl
+}
 
-		if err != nil {
-			t.Errorf("Failed with: %s", err)
-		}
-	})
+func teardown() {
+	server.Close()
+}
+
+func urlFor(t *testing.T, route string, values map[string]string) string {
+	u, err := client.url(route, values)
+	if err != nil {
+		t.Errorf("Failed url parsing: %s", err)
+	}
+
+	return "/" + u.Path
+}
+
+func checkMethod(t *testing.T, r *http.Request, expected string) {
+	if r.Method != expected {
+		t.Errorf("Wrong http Method: w: %s g:%s", expected, r.Method)
+	}
+}
+
+func writeJSON(w http.ResponseWriter, v interface{}) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	err := json.NewEncoder(w).Encode(v)
+	if err != nil {
+		panic("Error encoding:" + err.Error())
+	}
 }
