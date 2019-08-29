@@ -18,6 +18,7 @@ var (
 
 func Handler() *mux.Router {
 	router := mux.NewRouter()
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(StaticDir))))
 	router.Path("/").Methods("GET").Handler(handler(serveHome))
 
 	return router
@@ -38,14 +39,14 @@ func runHandler(w http.ResponseWriter, r *http.Request, fn handler) {
 		if rv := recover(); rv != nil {
 			err := errors.New("runHandler error")
 			logError(r, err, rv)
-			handleError()
+			handleError(w, r, http.StatusInternalServerError, err)
 		}
 	}()
 
 	err := fn(w, r)
 	if err != nil {
 		logError(r, err, nil)
-		handleError()
+		handleError(w, r, http.StatusInternalServerError, err)
 	}
 }
 
@@ -62,5 +63,18 @@ func logError(r *http.Request, err error, rv interface{}) {
 	}
 }
 
-func handleError() {
+func handleError(w http.ResponseWriter, r *http.Request, status int, err error) {
+	renderErr := renderTemplate(w, r, ErrorTemplate, status, &struct {
+		StatusCode int
+		Status     string
+		Error      error
+	}{
+		StatusCode: status,
+		Status:     http.StatusText(status),
+		Error:      err,
+	})
+
+	if renderErr != nil {
+		log.Fatalf("Failed to render error template: %s", renderErr)
+	}
 }

@@ -9,7 +9,8 @@ import (
 )
 
 const (
-	HomeTemplate = "home.html"
+	HomeTemplate  = "home.html"
+	ErrorTemplate = "error/error.html"
 )
 
 var (
@@ -21,6 +22,7 @@ var templates = make(map[string]*htmpl.Template)
 func loadTemplates() {
 	err := parseTemplates([][]string{
 		{HomeTemplate, "common.html", "layout.html"},
+		{ErrorTemplate, "common.html", "layout.html"},
 	})
 
 	if err != nil {
@@ -35,8 +37,12 @@ func renderTemplate(w http.ResponseWriter, r *http.Request, name string, status 
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	}
 
-	fmt.Fprint(w, name)
-	return nil
+	tmpl := templates[name]
+	if tmpl == nil {
+		return fmt.Errorf("Couldn't find template for: %s", name)
+	}
+
+	return tmpl.Execute(w, data)
 }
 
 func parseTemplates(sets [][]string) error {
