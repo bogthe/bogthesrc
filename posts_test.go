@@ -10,7 +10,7 @@ import (
 
 func TestGETPost(t *testing.T) {
 	setup()
-	teardown()
+	defer teardown()
 
 	want := &Post{
 		ID: "1",
