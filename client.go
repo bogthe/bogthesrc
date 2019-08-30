@@ -26,9 +26,30 @@ type ListOptions struct {
 	Page    int `url:".omitempty" json:".omitempty"`
 }
 
+func (lo ListOptions) PageOrDefault() int {
+	if lo.Page <= 0 {
+		return 1
+	}
+
+	return lo.Page
+}
+
+func (lo ListOptions) PerPageOrDefault() int {
+	if lo.PerPage <= 0 {
+		return DefaultPerPage
+	}
+
+	return lo.PerPage
+}
+
+func (lo ListOptions) Offset() int {
+	return (lo.PageOrDefault() - 1) * lo.PerPageOrDefault()
+}
+
 const (
-	version   = "0.0.1"
-	userAgent = "bogthesrc-client" + version
+	version        = "0.0.1"
+	userAgent      = "bogthesrc-client" + version
+	DefaultPerPage = 10
 )
 
 // NewClient
