@@ -15,6 +15,10 @@ type Post struct {
 	AuthordID   int
 }
 
+type PostListOptions struct {
+	ListOptions
+}
+
 type PostService interface {
 	Get(id string) (*Post, error)
 }
@@ -23,9 +27,29 @@ type postService struct {
 	client *Client
 }
 
+func (s *postService) List(options *PostListOptions) ([]*Post, error) {
+	url, err := s.client.url(router.Posts, nil, options)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := s.client.NewRequest("GET", url.String())
+	if err != nil {
+		return nil, err
+	}
+
+	var posts []*Post
+	_, err = s.client.Do(req, &posts)
+	if err != nil {
+		return nil, err
+	}
+
+	return posts, nil
+}
+
 func (s *postService) Get(id string) (*Post, error) {
 	// need to have an url
-	url, err := s.client.url(router.Post, map[string]string{"ID": id})
+	url, err := s.client.url(router.Post, map[string]string{"ID": id}, nil)
 	if err != nil {
 		return nil, err
 	}

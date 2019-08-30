@@ -6,9 +6,11 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strings"
 
 	"github.com/bogthe/bogthesrc/router"
+	"github.com/google/go-querystring/query"
 )
 
 // define Client struct
@@ -17,6 +19,11 @@ type Client struct {
 	UserAgent string
 
 	httpClient *http.Client
+}
+
+type ListOptions struct {
+	PerPage int `url:".omitempty" json:".omitempty"`
+	Page    int `url:".omitempty" json:".omitempty"`
 }
 
 const (
@@ -39,8 +46,8 @@ func NewClient(client *http.Client) *Client {
 
 var apiRouter = router.API()
 
-func (c *Client) url(apiRouteName string, routeVars map[string]string) (*url.URL, error) {
-	route := apiRouter.Name(apiRouteName)
+func (c *Client) url(apiRouteName string, routeVars map[string]string, opt interface{}) (*url.URL, error) {
+	route := apiRouter.Get(apiRouteName)
 	if route == nil {
 		return nil, fmt.Errorf("Route not found %s", apiRouteName)
 	}
@@ -56,6 +63,13 @@ func (c *Client) url(apiRouteName string, routeVars map[string]string) (*url.URL
 	newUrl, err := route.URL(routeList...)
 	if err != nil {
 		return nil, err
+	}
+
+	if opt != nil {
+		err = addOptions(newUrl, opt)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	newUrl.Path = strings.TrimPrefix(newUrl.Path, "/")
@@ -102,4 +116,19 @@ func (c *Client) Do(request *http.Request, v interface{}) (*http.Response, error
 	}
 
 	return resp, nil
+}
+
+func addOptions(u *url.URL, opt interface{}) error {
+	v := reflect.ValueOf(opt)
+	if v.Kind() == reflect.Ptr && v.IsNil() {
+		return nil
+	}
+
+	queryString, err := query.Values(opt)
+	if err != nil {
+		return err
+	}
+
+	u.RawQuery = queryString.Encode()
+	return nil
 }

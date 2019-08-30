@@ -28,9 +28,9 @@ func teardown() {
 }
 
 func urlFor(t *testing.T, route string, values map[string]string) string {
-	u, err := client.url(route, values)
+	u, err := client.url(route, values, nil)
 	if err != nil {
-		t.Errorf("Failed url parsing: %s", err)
+		t.Errorf("Failed url for route %s : %s", route, err)
 	}
 
 	return "/" + u.Path
