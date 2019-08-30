@@ -1,0 +1,105 @@
+package bogthesrc
+
+import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+	"strings"
+
+	"github.com/bogthe/bogthesrc/router"
+)
+
+// define Client struct
+type Client struct {
+	BaseUrl   *url.URL
+	UserAgent string
+
+	httpClient *http.Client
+}
+
+const (
+	version   = "0.0.1"
+	userAgent = "bogthesrc-client" + version
+)
+
+// NewClient
+func NewClient(client *http.Client) *Client {
+	if client == nil {
+		client = http.DefaultClient
+	}
+
+	return &Client{
+		BaseUrl:    &url.URL{Scheme: "http", Host: "bogthesrc.co.uk", Path: "/api"},
+		UserAgent:  userAgent,
+		httpClient: client,
+	}
+}
+
+var apiRouter = router.API()
+
+func (c *Client) url(apiRouteName string, routeVars map[string]string) (*url.URL, error) {
+	route := apiRouter.Name(apiRouteName)
+	if route == nil {
+		return nil, fmt.Errorf("Route not found %s", apiRouteName)
+	}
+
+	i := 0
+	routeList := make([]string, len(routeVars)*2)
+	for key, value := range routeVars {
+		routeList[i*2] = key
+		routeList[i*2+1] = value
+		i++
+	}
+
+	newUrl, err := route.URL(routeList...)
+	if err != nil {
+		return nil, err
+	}
+
+	newUrl.Path = strings.TrimPrefix(newUrl.Path, "/")
+	return newUrl, nil
+}
+
+// client.NewRequest - creates a new request http.NewRequest for method, relativeUrl, jsonBody?
+func (c *Client) NewRequest(method, relativeUrl string) (*http.Request, error) {
+	rel, err := url.Parse(relativeUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	u := c.BaseUrl.ResolveReference(rel)
+
+	req, err := http.NewRequest(method, u.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("User-Agent", c.UserAgent)
+	return req, nil
+}
+
+// client.Do - sends an API request and receives an API response, returns the response or error
+func (c *Client) Do(request *http.Request, v interface{}) (*http.Response, error) {
+	resp, err := c.httpClient.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	if v != nil {
+		if bp, ok := v.(*[]byte); ok {
+			*bp, err = ioutil.ReadAll(resp.Body)
+		} else {
+			err = json.NewDecoder(resp.Body).Decode(v)
+		}
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("Error reading response: %s %s %s", request.Method, request.URL.RequestURI(), err)
+	}
+
+	return resp, nil
+}
