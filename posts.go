@@ -21,6 +21,7 @@ type PostListOptions struct {
 
 type PostService interface {
 	Get(id string) (*Post, error)
+	List() ([]*Post, error)
 }
 
 type postService struct {

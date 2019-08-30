@@ -6,5 +6,19 @@ services:
       - .:/app
       - $GOPATH/pkg/mod/cache:/go/pkg/mod/cache
     working_dir: /app
+    environment:
+      - PGUSER=postgres
+      - PGPASSWORD=docker
+      - PGHOST=database
+      - PGSSLMODE=disable
     ports:
       - 5000:5000
+  database:
+    image: 'postgres:11-alpine'
+    environment:
+      - PGUSER=postgres
+      - PGPASSWORD=docker
+    volumes:
+      - bogthesrc_db:/var/lib/postgresql/data
+volumes:
+  bogthesrc_db:
