@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/bogthe/bogthesrc"
 	"github.com/bogthe/bogthesrc/api"
 	"github.com/bogthe/bogthesrc/app"
 	"github.com/bogthe/bogthesrc/datastore"
@@ -21,6 +22,7 @@ type subcmd struct {
 
 var cmds = []subcmd{
 	{"serve", "Start a web server", serveCmd},
+	{"post", "Create a new post", postCmd},
 	{"create-db", "Creates the DB", createDbCmd},
 }
 
@@ -120,4 +122,18 @@ The options are:
 func createDbCmd(args []string) {
 	datastore.Connect()
 	datastore.Create()
+}
+
+func postCmd(args []string) {
+	service := &bogthesrc.PostService{bogthesrc.NewClient(nil)}
+	post := &bogthesrc.Post{
+		Title: "First of it's kind",
+		Body:  "I AM THE FIRST OF MY KIND",
+		Link:  "https://monzo.com",
+	}
+
+	err := service.Create(post)
+	if err != nil {
+		log.Fatalf("Failed creating a post %v", err)
+	}
 }

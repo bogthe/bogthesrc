@@ -12,7 +12,7 @@ func TestGETPost(t *testing.T) {
 	setup()
 	defer teardown()
 
-	wantPost := &Post{ID: "1"}
+	wantPost := &Post{ID: 1}
 	wantPosts := []*Post{wantPost}
 	calledPost := false
 	calledPosts := false

@@ -21,6 +21,7 @@ type internalError struct {
 func Handler() *mux.Router {
 	r := router.API()
 	r.Get(router.Post).Handler(handler(servePost))
+	r.Get(router.PostCreate).Handler(handler(serveCreatePost))
 	r.Get(router.Posts).Handler(handler(servePosts))
 
 	return r

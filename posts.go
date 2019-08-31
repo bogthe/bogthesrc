@@ -7,7 +7,7 @@ import (
 )
 
 type Post struct {
-	ID          string
+	ID          int
 	Title       string
 	Link        string
 	Body        string
@@ -29,7 +29,7 @@ func (s *PostService) List(options *PostListOptions) ([]*Post, error) {
 		return nil, err
 	}
 
-	req, err := s.Client.NewRequest("GET", url.String())
+	req, err := s.Client.NewRequest("GET", url.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -43,6 +43,25 @@ func (s *PostService) List(options *PostListOptions) ([]*Post, error) {
 	return posts, nil
 }
 
+func (s *PostService) Create(post *Post) error {
+	url, err := s.Client.url(router.PostCreate, nil, nil)
+	if err != nil {
+		return err
+	}
+
+	req, err := s.Client.NewRequest("POST", url.String(), post)
+	if err != nil {
+		return err
+	}
+
+	_, err = s.Client.Do(req, &post)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *PostService) Get(id string) (*Post, error) {
 	// need to have an url
 	url, err := s.Client.url(router.Post, map[string]string{"ID": id}, nil)
@@ -51,7 +70,7 @@ func (s *PostService) Get(id string) (*Post, error) {
 	}
 
 	// create the request
-	request, err := s.Client.NewRequest("GET", url.String())
+	request, err := s.Client.NewRequest("GET", url.String(), nil)
 	if err != nil {
 		return nil, err
 	}

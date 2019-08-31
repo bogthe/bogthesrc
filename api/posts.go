@@ -44,6 +44,19 @@ func servePost(w http.ResponseWriter, r *http.Request) error {
 	return writeJSON(w, post)
 }
 
+func serveCreatePost(w http.ResponseWriter, r *http.Request) error {
+	var post bogthesrc.Post
+	if err := json.NewDecoder(r.Body).Decode(&post); err != nil {
+		return err
+	}
+
+	if err := store.Create(&post); err != nil {
+		return err
+	}
+
+	return writeJSON(w, post)
+}
+
 func servePosts(w http.ResponseWriter, r *http.Request) error {
 	var opt bogthesrc.PostListOptions
 	if err := decoder.Decode(&opt, r.URL.Query()); err != nil {

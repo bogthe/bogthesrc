@@ -8,7 +8,7 @@ import (
 )
 
 func TestStoreGetWithDB(t *testing.T) {
-	want := &bogthesrc.Post{ID: "1"}
+	want := &bogthesrc.Post{ID: 1}
 
 	tx, _ := DB.Begin()
 	defer tx.Rollback()
@@ -31,7 +31,7 @@ func TestStoreGetWithDB(t *testing.T) {
 }
 
 func TestStoreListWithDB(t *testing.T) {
-	want := []*bogthesrc.Post{&bogthesrc.Post{ID: "1"}}
+	want := []*bogthesrc.Post{&bogthesrc.Post{ID: 1}}
 
 	tx, _ := DB.Begin()
 	defer tx.Rollback()
