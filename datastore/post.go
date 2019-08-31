@@ -13,7 +13,7 @@ func init() {
 	)
 }
 
-type postStore struct {
+type PostStore struct {
 	*Datastore
 }
 
@@ -21,7 +21,7 @@ var (
 	PostNotFound = errors.New("Post not found")
 )
 
-func (s *postStore) Get(id string) (*bogthesrc.Post, error) {
+func (s *PostStore) Get(id string) (*bogthesrc.Post, error) {
 	var posts []*bogthesrc.Post
 	if err := s.dbh.Select(&posts, `SELECT * FROM post WHERE id=$1;`, id); err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func (s *postStore) Get(id string) (*bogthesrc.Post, error) {
 	return posts[0], nil
 }
 
-func (s *postStore) List(opt *bogthesrc.PostListOptions) ([]*bogthesrc.Post, error) {
+func (s *PostStore) List(opt *bogthesrc.PostListOptions) ([]*bogthesrc.Post, error) {
 	var posts []*bogthesrc.Post
 	err := s.dbh.Select(&posts, `SELECT * FROM post LIMIT $1 OFFSET $2;`, opt.PerPageOrDefault(), opt.Offset())
 	if err != nil {

@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/google/go-querystring v1.0.0
 	github.com/gorilla/mux v1.7.3
+	github.com/gorilla/schema v1.1.0
 	github.com/jmoiron/modl v0.0.0-20160417153729-99654d091ece
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/kr/pty v1.1.8 // indirect

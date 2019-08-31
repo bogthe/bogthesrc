@@ -8,7 +8,9 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/bogthe/bogthesrc/api"
 	"github.com/bogthe/bogthesrc/app"
+	"github.com/bogthe/bogthesrc/datastore"
 )
 
 type subcmd struct {
@@ -19,6 +21,7 @@ type subcmd struct {
 
 var cmds = []subcmd{
 	{"serve", "Start a web server", serveCmd},
+	{"create-db", "Creates the DB", createDbCmd},
 }
 
 func init() {
@@ -100,8 +103,11 @@ The options are:
 	app.StaticDir = static
 	app.TemplateDir = tmpl
 
+	datastore.Connect()
+
 	handler := http.NewServeMux()
 	handler.Handle("/", app.Handler())
+	handler.Handle("/api/", http.StripPrefix("/api", api.Handler()))
 
 	log.Print("Listening on ", *port)
 	err := http.ListenAndServe(*port, handler)
@@ -109,4 +115,9 @@ The options are:
 		log.Fatal(err.Error())
 		os.Exit(1)
 	}
+}
+
+func createDbCmd(args []string) {
+	datastore.Connect()
+	datastore.Create()
 }
