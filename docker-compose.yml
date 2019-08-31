@@ -9,6 +9,7 @@ services:
     environment:
       - PGUSER=postgres
       - PGPASSWORD=docker
+      - PGDATABASE=bogthesrc
       - PGHOST=database
       - PGSSLMODE=disable
     ports:

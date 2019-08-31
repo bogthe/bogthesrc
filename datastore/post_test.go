@@ -19,7 +19,7 @@ func TestStoreGetWithDB(t *testing.T) {
 	}
 
 	d := NewDatastore(tx)
-	store := &postStore{d}
+	store := &PostStore{d}
 	post, err := store.Get("1")
 	if err != nil {
 		t.Fatalf("Failed get %s", err)
@@ -42,7 +42,7 @@ func TestStoreListWithDB(t *testing.T) {
 	}
 
 	d := NewDatastore(tx)
-	store := postStore{d}
+	store := PostStore{d}
 	posts, err := store.List(&bogthesrc.PostListOptions{ListOptions: bogthesrc.ListOptions{Page: 1, PerPage: 10}})
 	if err != nil {
 		t.Fatalf("Failed retrieve %s", err)
