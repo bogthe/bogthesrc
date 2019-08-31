@@ -106,8 +106,8 @@ The options are:
 	datastore.Connect()
 
 	handler := http.NewServeMux()
-	handler.Handle("/", app.Handler())
 	handler.Handle("/api/", http.StripPrefix("/api", api.Handler()))
+	handler.Handle("/", app.Handler())
 
 	log.Print("Listening on ", *port)
 	err := http.ListenAndServe(*port, handler)

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"runtime/debug"
 
+	"github.com/bogthe/bogthesrc/router"
 	"github.com/gorilla/mux"
 )
 
@@ -17,11 +18,13 @@ var (
 )
 
 func Handler() *mux.Router {
-	router := mux.NewRouter()
-	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(StaticDir))))
-	router.Path("/").Methods("GET").Handler(handler(serveHome))
+	r := router.App()
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(StaticDir))))
+	r.Get(router.Home).Handler(handler(serveHome))
+	r.Get(router.Post).Handler(handler(servePost))
+	r.Get(router.Posts).Handler(handler(servePosts))
 
-	return router
+	return r
 }
 
 type handler func(w http.ResponseWriter, r *http.Request) error

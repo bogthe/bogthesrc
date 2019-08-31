@@ -22,8 +22,8 @@ type Client struct {
 }
 
 type ListOptions struct {
-	PerPage int `url:".omitempty" json:".omitempty"`
-	Page    int `url:".omitempty" json:".omitempty"`
+	PerPage int `url:",omitempty" json:",omitempty"`
+	Page    int `url:",omitempty" json:",omitempty"`
 }
 
 func (lo ListOptions) PageOrDefault() int {
@@ -59,7 +59,7 @@ func NewClient(client *http.Client) *Client {
 	}
 
 	return &Client{
-		BaseUrl:    &url.URL{Scheme: "http", Host: "bogthesrc.co.uk", Path: "/api"},
+		BaseUrl:    &url.URL{Scheme: "http", Host: "localhost:5000", Path: "/api/"},
 		UserAgent:  userAgent,
 		httpClient: client,
 	}
