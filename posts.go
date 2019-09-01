@@ -1,6 +1,7 @@
 package bogthesrc
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/bogthe/bogthesrc/router"
@@ -19,11 +20,17 @@ type PostListOptions struct {
 	ListOptions
 }
 
-type PostService struct {
+type PostService interface {
+	List(options *PostListOptions) ([]*Post, error)
+	Create(post *Post) error
+	Get(id int) (*Post, error)
+}
+
+type postService struct {
 	Client *Client
 }
 
-func (s *PostService) List(options *PostListOptions) ([]*Post, error) {
+func (s *postService) List(options *PostListOptions) ([]*Post, error) {
 	url, err := s.Client.url(router.Posts, nil, options)
 	if err != nil {
 		return nil, err
@@ -43,7 +50,7 @@ func (s *PostService) List(options *PostListOptions) ([]*Post, error) {
 	return posts, nil
 }
 
-func (s *PostService) Create(post *Post) error {
+func (s *postService) Create(post *Post) error {
 	url, err := s.Client.url(router.PostCreate, nil, nil)
 	if err != nil {
 		return err
@@ -62,9 +69,9 @@ func (s *PostService) Create(post *Post) error {
 	return nil
 }
 
-func (s *PostService) Get(id string) (*Post, error) {
+func (s *postService) Get(id int) (*Post, error) {
 	// need to have an url
-	url, err := s.Client.url(router.Post, map[string]string{"ID": id}, nil)
+	url, err := s.Client.url(router.Post, map[string]string{"ID": strconv.Itoa(id)}, nil)
 	if err != nil {
 		return nil, err
 	}

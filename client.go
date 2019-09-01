@@ -22,6 +22,11 @@ type Client struct {
 	httpClient *http.Client
 }
 
+type ApiClient struct {
+	Client *Client
+	Posts  PostService
+}
+
 type ListOptions struct {
 	PerPage int `url:",omitempty" json:",omitempty"`
 	Page    int `url:",omitempty" json:",omitempty"`
@@ -63,6 +68,18 @@ func NewClient(client *http.Client) *Client {
 		BaseUrl:    &url.URL{Scheme: "http", Host: "localhost:5000", Path: "/api/"},
 		UserAgent:  userAgent,
 		httpClient: client,
+	}
+}
+
+func NewApiClient(client *Client) *ApiClient {
+	if client == nil {
+		client = NewClient(nil)
+	}
+
+	posts := &postService{client}
+	return &ApiClient{
+		Client: client,
+		Posts:  posts,
 	}
 }
 

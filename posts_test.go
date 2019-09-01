@@ -31,10 +31,10 @@ func TestGETPost(t *testing.T) {
 		writeJSON(w, wantPosts)
 	})
 
-	posts := &PostService{Client: client}
+	apiClient := NewApiClient(client)
 
 	t.Run("Can get a post by id", func(t *testing.T) {
-		actualPost, err := posts.Get("1")
+		actualPost, err := apiClient.Posts.Get(1)
 
 		if err != nil {
 			t.Errorf("Failed to get post :%s", err)
@@ -50,7 +50,7 @@ func TestGETPost(t *testing.T) {
 	})
 
 	t.Run("Can get posts list", func(t *testing.T) {
-		actualPosts, err := posts.List(nil)
+		actualPosts, err := apiClient.Posts.List(nil)
 		if err != nil {
 			t.Errorf("Failed to list posts %s", err)
 		}

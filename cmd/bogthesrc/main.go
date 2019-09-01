@@ -125,14 +125,14 @@ func createDbCmd(args []string) {
 }
 
 func postCmd(args []string) {
-	service := &bogthesrc.PostService{bogthesrc.NewClient(nil)}
+	client := bogthesrc.NewApiClient(nil)
 	post := &bogthesrc.Post{
 		Title: "First of it's kind",
 		Body:  "I AM THE FIRST OF MY KIND",
 		Link:  "https://monzo.com",
 	}
 
-	err := service.Create(post)
+	err := client.Posts.Create(post)
 	if err != nil {
 		log.Fatalf("Failed creating a post %v", err)
 	}

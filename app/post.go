@@ -2,14 +2,21 @@ package app
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/bogthe/bogthesrc"
+	"github.com/gorilla/mux"
 )
 
-var service = &bogthesrc.PostService{bogthesrc.NewClient(nil)}
+var apiClient = bogthesrc.NewApiClient(nil)
 
 func servePost(w http.ResponseWriter, r *http.Request) error {
-	post, err := service.Get("1")
+	id, err := strconv.Atoi(mux.Vars(r)["ID"])
+	if err != nil {
+		return err
+	}
+
+	post, err := apiClient.Posts.Get(id)
 	if err != nil {
 		return err
 	}
@@ -22,7 +29,7 @@ func servePost(w http.ResponseWriter, r *http.Request) error {
 }
 
 func servePosts(w http.ResponseWriter, r *http.Request) error {
-	posts, err := service.List(&bogthesrc.PostListOptions{})
+	posts, err := apiClient.Posts.List(&bogthesrc.PostListOptions{})
 	if err != nil {
 		return err
 	}
