@@ -92,3 +92,33 @@ func (s *postService) Get(id int) (*Post, error) {
 
 	return post, nil
 }
+
+type MockPostService struct {
+	Get_    func(id int) (*Post, error)
+	List_   func(options *PostListOptions) ([]*Post, error)
+	Create_ func(post *Post) error
+}
+
+func (m *MockPostService) Get(id int) (*Post, error) {
+	if m.Get_ != nil {
+		return m.Get_(id)
+	}
+
+	return nil, nil
+}
+
+func (m *MockPostService) List(options *PostListOptions) ([]*Post, error) {
+	if m.List_ != nil {
+		return m.List_(options)
+	}
+
+	return nil, nil
+}
+
+func (m *MockPostService) Create(post *Post) error {
+	if m.Create_ != nil {
+		return m.Create_(post)
+	}
+
+	return nil
+}

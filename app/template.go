@@ -21,7 +21,7 @@ var (
 
 var templates = make(map[string]*htmpl.Template)
 
-func loadTemplates() {
+func LoadTemplates() {
 	err := parseTemplates([][]string{
 		{HomeTemplate, "common.html", "layout.html"},
 		{PostTemplate, "common.html", "layout.html"},
@@ -77,10 +77,3 @@ func basePath(base string, files []string) []string {
 
 	return paths
 }
-
-/*
-A template is made up of a set of different files
-Load template sets from disk
-Calculate template path on disk for each set
-Keep rendered templates in a map
-*/

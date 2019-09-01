@@ -31,7 +31,7 @@ type handler func(w http.ResponseWriter, r *http.Request) error
 
 func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if ReloadTemplates {
-		loadTemplates()
+		LoadTemplates()
 	}
 
 	runHandler(w, r, h)

@@ -3,6 +3,7 @@ module github.com/bogthe/bogthesrc
 go 1.12
 
 require (
+	github.com/PuerkitoBio/goquery v1.5.0
 	github.com/google/go-querystring v1.0.0
 	github.com/gorilla/mux v1.7.3
 	github.com/gorilla/schema v1.1.0
