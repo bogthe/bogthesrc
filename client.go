@@ -1,6 +1,7 @@
 package bogthesrc
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -22,8 +23,8 @@ type Client struct {
 }
 
 type ListOptions struct {
-	PerPage int `url:".omitempty" json:".omitempty"`
-	Page    int `url:".omitempty" json:".omitempty"`
+	PerPage int `url:",omitempty" json:",omitempty"`
+	Page    int `url:",omitempty" json:",omitempty"`
 }
 
 func (lo ListOptions) PageOrDefault() int {
@@ -59,7 +60,7 @@ func NewClient(client *http.Client) *Client {
 	}
 
 	return &Client{
-		BaseUrl:    &url.URL{Scheme: "http", Host: "bogthesrc.co.uk", Path: "/api"},
+		BaseUrl:    &url.URL{Scheme: "http", Host: "localhost:5000", Path: "/api/"},
 		UserAgent:  userAgent,
 		httpClient: client,
 	}
@@ -97,8 +98,7 @@ func (c *Client) url(apiRouteName string, routeVars map[string]string, opt inter
 	return newUrl, nil
 }
 
-// client.NewRequest - creates a new request http.NewRequest for method, relativeUrl, jsonBody?
-func (c *Client) NewRequest(method, relativeUrl string) (*http.Request, error) {
+func (c *Client) NewRequest(method, relativeUrl string, body interface{}) (*http.Request, error) {
 	rel, err := url.Parse(relativeUrl)
 	if err != nil {
 		return nil, err
@@ -106,7 +106,15 @@ func (c *Client) NewRequest(method, relativeUrl string) (*http.Request, error) {
 
 	u := c.BaseUrl.ResolveReference(rel)
 
-	req, err := http.NewRequest(method, u.String(), nil)
+	buf := new(bytes.Buffer)
+	if body != nil {
+		err := json.NewEncoder(buf).Encode(body)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	req, err := http.NewRequest(method, u.String(), buf)
 	if err != nil {
 		return nil, err
 	}

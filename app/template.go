@@ -9,8 +9,10 @@ import (
 )
 
 const (
-	HomeTemplate  = "home.html"
-	ErrorTemplate = "error/error.html"
+	HomeTemplate     = "home.html"
+	PostTemplate     = "post/show.html"
+	PostListTemplate = "post/list.html"
+	ErrorTemplate    = "error/error.html"
 )
 
 var (
@@ -22,6 +24,8 @@ var templates = make(map[string]*htmpl.Template)
 func loadTemplates() {
 	err := parseTemplates([][]string{
 		{HomeTemplate, "common.html", "layout.html"},
+		{PostTemplate, "common.html", "layout.html"},
+		{PostListTemplate, "common.html", "layout.html"},
 		{ErrorTemplate, "common.html", "layout.html"},
 	})
 

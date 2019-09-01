@@ -12,7 +12,7 @@ func TestGETPost(t *testing.T) {
 	setup()
 	defer teardown()
 
-	wantPost := &Post{ID: "1"}
+	wantPost := &Post{ID: 1}
 	wantPosts := []*Post{wantPost}
 	calledPost := false
 	calledPosts := false
@@ -31,7 +31,7 @@ func TestGETPost(t *testing.T) {
 		writeJSON(w, wantPosts)
 	})
 
-	posts := &postService{client: client}
+	posts := &PostService{Client: client}
 
 	t.Run("Can get a post by id", func(t *testing.T) {
 		actualPost, err := posts.Get("1")

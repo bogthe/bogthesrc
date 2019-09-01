@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	DB.AddTableWithName(bogthesrc.Post{}, "post").SetKeys(false, "ID")
+	DB.AddTableWithName(bogthesrc.Post{}, "post").SetKeys(true, "ID")
 	createSql = append(createSql,
 		`CREATE INDEX post_submittedat ON post(submittedat DESC);`,
 	)
@@ -32,6 +32,10 @@ func (s *PostStore) Get(id string) (*bogthesrc.Post, error) {
 	}
 
 	return posts[0], nil
+}
+
+func (s *PostStore) Create(post *bogthesrc.Post) error {
+	return s.dbh.Insert(post)
 }
 
 func (s *PostStore) List(opt *bogthesrc.PostListOptions) ([]*bogthesrc.Post, error) {
