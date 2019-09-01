@@ -1,11 +1,20 @@
 {{define "Header"}}
 <header>
-    <h1><a class="thesrc brand" href="/">&#x2731; <span class="name">bogthesrc</span></a></h1>
+    <h1>{{template "brandLink"}}</h1>
+    <nav>
+        <ul>
+            <li><a href="{{urlTo "post:create-form"}}">Submit</a></li>
+        </ul>
+    </nav>
 </header>
 {{end}}
 
 {{define "Footer"}}
 <footer>
-    <h1><a class="thesrc brand" href="/">&#x2731; <span class="name">bogthesrc</span></a></h1>
+    <h1>{{template "brandLink"}}</h1>
 </footer>
+{{end}}
+
+{{define "brandLink"}}
+<a class="thesrc brand" href="/">&#x2731; <span class="name"><span class="the">src</span><span class="src">bogthe</span></span></a>
 {{end}}

@@ -15,14 +15,18 @@ import (
 var (
 	ReloadTemplates bool
 	StaticDir       string
+
+	routerApp = router.App()
 )
 
 func Handler() *mux.Router {
-	r := router.App()
+	r := routerApp
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(StaticDir))))
 	r.Get(router.Home).Handler(handler(serveHome))
 	r.Get(router.Post).Handler(handler(servePost))
 	r.Get(router.Posts).Handler(handler(servePosts))
+	r.Get(router.PostCreate).Handler(handler(servePostCreate))
+	r.Get(router.PostCreateForm).Handler(handler(servePostCreateForm))
 
 	return r
 }

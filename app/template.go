@@ -5,14 +5,16 @@ import (
 	htmpl "html/template"
 	"log"
 	"net/http"
+	"net/url"
 	"path/filepath"
 )
 
 const (
-	HomeTemplate     = "home.html"
-	PostTemplate     = "post/show.html"
-	PostListTemplate = "post/list.html"
-	ErrorTemplate    = "error/error.html"
+	HomeTemplate       = "home.html"
+	PostTemplate       = "post/show.html"
+	PostListTemplate   = "post/list.html"
+	PostCreateTemplate = "post/create.html"
+	ErrorTemplate      = "error/error.html"
 )
 
 var (
@@ -25,6 +27,7 @@ func LoadTemplates() {
 	err := parseTemplates([][]string{
 		{HomeTemplate, "common.html", "layout.html"},
 		{PostTemplate, "common.html", "layout.html"},
+		{PostCreateTemplate, "common.html", "layout.html"},
 		{PostListTemplate, "common.html", "layout.html"},
 		{ErrorTemplate, "common.html", "layout.html"},
 	})
@@ -53,7 +56,13 @@ func parseTemplates(sets [][]string) error {
 	for _, set := range sets {
 		key := set[0]
 		files := basePath(TemplateDir, set)
-		tmpl, err := htmpl.New(key).ParseFiles(files...)
+
+		tmpl := htmpl.New(key)
+		tmpl.Funcs(htmpl.FuncMap{
+			"urlTo": urlTo,
+		})
+
+		_, err := tmpl.ParseFiles(files...)
 		if err != nil {
 			return fmt.Errorf("Failed to parse template: %v, %s", set, err)
 		}
@@ -67,6 +76,21 @@ func parseTemplates(sets [][]string) error {
 	}
 
 	return nil
+}
+
+func urlTo(path string, params ...string) *url.URL {
+	route := routerApp.Get(path)
+	if route == nil {
+		log.Panicf("Route not recognized %v, params: %v", path, params)
+	}
+
+	u, err := route.URLPath(params...)
+	if err != nil {
+		log.Printf("Failed URL for %v with %v", path, params)
+		return &url.URL{}
+	}
+
+	return u
 }
 
 func basePath(base string, files []string) []string {
