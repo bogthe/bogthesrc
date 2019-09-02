@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"path/filepath"
+	"strings"
 )
 
 const (
@@ -26,9 +27,9 @@ var templates = make(map[string]*htmpl.Template)
 func LoadTemplates() {
 	err := parseTemplates([][]string{
 		{HomeTemplate, "common.html", "layout.html"},
-		{PostTemplate, "common.html", "layout.html"},
+		{PostTemplate, "post/common.html", "common.html", "layout.html"},
 		{PostCreateTemplate, "common.html", "layout.html"},
-		{PostListTemplate, "common.html", "layout.html"},
+		{PostListTemplate, "post/common.html", "common.html", "layout.html"},
 		{ErrorTemplate, "common.html", "layout.html"},
 	})
 
@@ -59,7 +60,8 @@ func parseTemplates(sets [][]string) error {
 
 		tmpl := htmpl.New(key)
 		tmpl.Funcs(htmpl.FuncMap{
-			"urlTo": urlTo,
+			"urlTo":     urlTo,
+			"urlDomain": urlDomain,
 		})
 
 		_, err := tmpl.ParseFiles(files...)
@@ -91,6 +93,15 @@ func urlTo(path string, params ...string) *url.URL {
 	}
 
 	return u
+}
+
+func urlDomain(urlStr string) string {
+	u, err := url.Parse(urlStr)
+	if err != nil {
+		return "Invalid URL"
+	}
+
+	return strings.TrimPrefix(u.Host, "www.")
 }
 
 func basePath(base string, files []string) []string {

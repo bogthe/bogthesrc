@@ -2,7 +2,6 @@
 {{end}}
 
 {{define "Main"}}
-<a class="post-link" href="{{.Post.Link}}">{{.Post.Title}}</a>
-<p class="post-body">{{.Post.Body}}</p>
+{{template "Post" .Post}}
 {{end}}
 
