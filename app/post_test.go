@@ -1,8 +1,12 @@
 package app
 
 import (
+	"bytes"
 	"net/http"
+	"net/http/httptest"
+	"net/url"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/PuerkitoBio/goquery"
@@ -16,6 +20,7 @@ func TestPost(t *testing.T) {
 
 	called := false
 	listCalled := false
+	createCalled := false
 	post := &bogthesrc.Post{ID: 1, Title: "Test title", Body: "Test body", Link: "testlink.com"}
 	posts := []*bogthesrc.Post{post}
 
@@ -27,6 +32,11 @@ func TestPost(t *testing.T) {
 			}
 
 			return post, nil
+		},
+		Create_: func(post *bogthesrc.Post) error {
+			createCalled = true
+			post.ID = 1
+			return nil
 		},
 		List_: func(opt *bogthesrc.PostListOptions) ([]*bogthesrc.Post, error) {
 			listCalled = true
@@ -75,6 +85,77 @@ func TestPost(t *testing.T) {
 			checkPostRender(doc, p, t)
 		}
 	})
+
+	t.Run("Can get post creation form", func(t *testing.T) {
+		url_, err := router.App().Get(router.PostCreateForm).URL()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		url_.RawQuery = url.Values{
+			"Title": []string{post.Title},
+			"Link":  []string{post.Link},
+			"Body":  []string{post.Body},
+		}.Encode()
+
+		doc, resp := getHTML(t, url_)
+		if resp.Code != http.StatusOK {
+			t.Fatal("Response code NOT OK")
+		}
+
+		if got, _ := doc.Find("input[name=Title]").Attr("value"); got != post.Title {
+			t.Errorf("Form input expected %s, got %s", post.Title, got)
+		}
+
+		if got, _ := doc.Find("input[name=Link]").Attr("value"); got != post.Link {
+			t.Errorf("Form input expected %s, got %s", post.Link, got)
+		}
+
+		if got := doc.Find("textarea[name=Body]").Text(); got != post.Body {
+			t.Errorf("Form input expected %s, got %s", post.Body, got)
+		}
+	})
+
+	t.Run("Can redirect after creating a post", func(t *testing.T) {
+		url_, err := router.App().Get(router.Posts).URL()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		v := url.Values{
+			"Title": []string{post.Title},
+			"Link":  []string{post.Link},
+			"Body":  []string{post.Body},
+		}
+
+		req, err := http.NewRequest("POST", url_.String(), strings.NewReader(v.Encode()))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		resp := httptest.NewRecorder()
+		resp.Body = new(bytes.Buffer)
+		testMux.ServeHTTP(resp, req)
+
+		if !createCalled {
+			t.Error("Client method not called")
+		}
+
+		if resp.Code != http.StatusSeeOther {
+			t.Errorf("Wrong response code %v", resp.Code)
+		}
+
+		redirectUrl := urlTo(router.Post, "ID", strconv.Itoa(post.ID)).String()
+		if resp.Header().Get("location") != redirectUrl {
+			t.Errorf("Bad location %v", resp.Header().Get("location"))
+		}
+	})
+}
+
+func checkFormValue(input, expected string, doc *goquery.Document, t *testing.T) {
+	if got, _ := doc.Find(input).Attr("value"); got != expected {
+		t.Errorf("Form input expected %s, got %s", expected, input)
+	}
 }
 
 func checkPostRender(doc *goquery.Document, post *bogthesrc.Post, t *testing.T) {
