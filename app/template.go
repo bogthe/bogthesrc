@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -62,6 +63,7 @@ func parseTemplates(sets [][]string) error {
 		tmpl.Funcs(htmpl.FuncMap{
 			"urlTo":     urlTo,
 			"urlDomain": urlDomain,
+			"itoa":      strconv.Itoa,
 		})
 
 		_, err := tmpl.ParseFiles(files...)
