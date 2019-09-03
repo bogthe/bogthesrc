@@ -3,17 +3,16 @@
 
 {{define "Main"}}
 <form action="{{urlTo .ActionTarget}}" method="post" class="create-post">
-    <dl>
-        <dt><label for="Title">Title</label></dt>
-        <dd><input id="Title" name="Title" type="text" size="80" maxlength="80" value="{{.Post.Title}}" tabindex="1"></dd>
+    <label for="Title">Title</label>
+    <input id="Title" name="Title" type="text" size="80" maxlength="80" value="{{.Post.Title}}" tabindex="1">
 
-        <dt><label for="Link">Link URL</label></dt>
-        <dd><input id="Link" name="Link" type="url" size="80" maxlength="255" value="{{.Post.Link}}" tabindex="2"></dd>
+    <label for="Link">Link URL</label>
+    <input id="Link" name="Link" type="url" size="80" maxlength="255" value="{{.Post.Link}}" tabindex="2">
 
-        <dt><label for="Body">Body</label></dt>
-        <dd><textarea id="Body" name="Body" rows="4" cols="80" maxlength="140" tabindex="3">{{.Post.Body}}</textarea></dd>
-    </dl>
-    <button type="submit" tabindex="4">Submit Post</button>
+    <label for="Body">Body</label>
+    <textarea id="Body" name="Body" rows="4" cols="80" maxlength="140" tabindex="3">{{.Post.Body}}</textarea>
+
+    <button type="submit" tabindex="4">Submit</button>
 </form>
 {{end}}
 
