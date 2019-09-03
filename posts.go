@@ -13,6 +13,7 @@ type Post struct {
 	Link        string
 	Body        string
 	SubmittedAt time.Time
+	Score       int
 	AuthordID   int
 }
 

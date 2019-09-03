@@ -33,7 +33,12 @@ func servePost(w http.ResponseWriter, r *http.Request) error {
 }
 
 func servePosts(w http.ResponseWriter, r *http.Request) error {
-	posts, err := apiClient.Posts.List(&bogthesrc.PostListOptions{})
+	var opt bogthesrc.PostListOptions
+	if err := schema.NewDecoder().Decode(&opt, r.URL.Query()); err != nil {
+		return err
+	}
+
+	posts, err := apiClient.Posts.List(&opt)
 	if err != nil {
 		return err
 	}

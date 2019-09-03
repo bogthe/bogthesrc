@@ -7,11 +7,13 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/bogthe/bogthesrc"
 	"github.com/bogthe/bogthesrc/api"
 	"github.com/bogthe/bogthesrc/app"
 	"github.com/bogthe/bogthesrc/datastore"
+	"github.com/bogthe/bogthesrc/importer"
 )
 
 type subcmd struct {
@@ -23,6 +25,7 @@ type subcmd struct {
 var cmds = []subcmd{
 	{"serve", "Start a web server", serveCmd},
 	{"post", "Create a new post", postCmd},
+	{"import", "Import posts", importCmd},
 	{"create-db", "Creates the DB", createDbCmd},
 }
 
@@ -121,6 +124,7 @@ The options are:
 
 func createDbCmd(args []string) {
 	datastore.Connect()
+	datastore.Drop()
 	datastore.Create()
 }
 
@@ -136,4 +140,26 @@ func postCmd(args []string) {
 	if err != nil {
 		log.Fatalf("Failed creating a post %v", err)
 	}
+}
+
+func importCmd(args []string) {
+	var wg sync.WaitGroup
+
+	for _, fetcher := range importer.Fetchers {
+		f := fetcher
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+
+			log.Printf("Starting %s", f.Site())
+			errs := importer.Import(f)
+			for _, err := range errs {
+				log.Println("Failed to import " + err.Error())
+			}
+
+			log.Printf("Finished %s", f.Site())
+		}()
+	}
+
+	wg.Wait()
 }

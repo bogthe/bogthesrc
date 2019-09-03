@@ -55,7 +55,7 @@ func (lo ListOptions) Offset() int {
 const (
 	version        = "0.0.1"
 	userAgent      = "bogthesrc-client" + version
-	DefaultPerPage = 10
+	DefaultPerPage = 60
 )
 
 // NewClient
