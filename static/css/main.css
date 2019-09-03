@@ -3,6 +3,43 @@ body {
     margin: 0; padding: 0;
 }
 
+.layout {
+    display: grid;
+	grid-template-columns: 1fr 5fr 1fr;
+    grid-template-rows: 100px minmax(calc(100vh - 200px), 100%) 100px;
+    grid-template-areas:
+        "header header header"
+        ". content ."
+        "footer footer footer"
+}
+
+.header {
+    grid-area: header;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    font-size: 2rem;
+}
+
+.header ul {
+    display: inline-flex;
+    padding-right: 20px;
+}
+
+.content {
+    grid-area: content;
+    display: flex;
+    justify-content: center;
+}
+
+.footer{
+    grid-area: footer;
+}
+
 /* common */
 .thesrc.brand .name {
 
@@ -103,10 +140,11 @@ li.post {
     margin-bottom: 8px;
     color: #aaa;
     clear: both;
+    font-size: 1.2rem;
 }
 li.post div.post {
     margin-left: 38px;
-    padding-left: 10px;
+    padding-left: 20px;
 }
 li.post .post-link {
     color: #468cbf;
@@ -141,7 +179,7 @@ li.post .post-info li {
 li.post .post-info li a {
     display: inline-block;
     text-align: center;
-    width: 25px;
+    width: 45px;
     color: #777;
     border-radius: 3px;
     border: solid 1px #e7e7e7;
