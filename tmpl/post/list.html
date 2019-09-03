@@ -2,16 +2,24 @@
 {{end}}
 
 {{define "Main"}}
-<ol class="posts">
-    {{range $i, $post := .Posts}}
-    <li class="post">
-        <ul class="post-info">
-            <li class="score">
-                <a href="{{urlTo "post" "ID" (itoa .ID)}}">{{.Score}} &#9733;</a>
-            </li>
-        </ul>
-        <div class="post">{{template "Post" $post}}</div>
-    </li>
-    {{end}}
-</ol>
+<div>
+    <ol class="posts">
+        {{range $i, $post := .Posts}}
+        <li class="post">
+            <ul class="post-info">
+                <li class="score">
+                    <a href="{{urlTo "post" "ID" (itoa .ID)}}">{{.Score}} &#9733;</a>
+                </li>
+            </ul>
+            <div class="post">{{template "Post" $post}}</div>
+        </li>
+        {{end}}
+    </ol>
+</div>
+
+<div class="navigators">
+    <a href="{{urlTo "posts"}}{{nextPage .CurrentPage true}}">prev</a>
+    |
+    <a href="{{urlTo "posts"}}{{nextPage .CurrentPage false}}">next</a>
+</div>
 {{end}}

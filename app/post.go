@@ -44,9 +44,11 @@ func servePosts(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	return renderTemplate(w, r, PostListTemplate, http.StatusOK, struct {
-		Posts []*bogthesrc.Post
+		Posts       []*bogthesrc.Post
+		CurrentPage int
 	}{
 		posts,
+		opt.PageOrDefault(),
 	})
 }
 

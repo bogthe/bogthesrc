@@ -64,6 +64,7 @@ func parseTemplates(sets [][]string) error {
 			"urlTo":     urlTo,
 			"urlDomain": urlDomain,
 			"itoa":      strconv.Itoa,
+			"nextPage":  nextPage,
 		})
 
 		_, err := tmpl.ParseFiles(files...)
@@ -104,6 +105,20 @@ func urlDomain(urlStr string) string {
 	}
 
 	return strings.TrimPrefix(u.Host, "www.")
+}
+
+func nextPage(current int, previous bool) string {
+	if previous {
+		if current > 1 {
+			current--
+		} else {
+			current = 1
+		}
+	} else {
+		current++
+	}
+
+	return fmt.Sprintf("?page=%v", current)
 }
 
 func basePath(base string, files []string) []string {

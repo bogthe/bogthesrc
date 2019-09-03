@@ -1,8 +1,9 @@
 {{define "Header"}}
-<header>
+<header class="header">
     <h1>{{template "brandLink"}}</h1>
     <nav>
         <ul>
+            <li><a href="{{urlTo "posts"}}">Posts</a></li>
             <li><a href="{{urlTo "post:create-form"}}">Submit</a></li>
         </ul>
     </nav>
@@ -10,7 +11,7 @@
 {{end}}
 
 {{define "Footer"}}
-<footer>
+<footer class="footer">
     <h1>{{template "brandLink"}}</h1>
 </footer>
 {{end}}
