@@ -114,7 +114,13 @@ The options are:
 	handler.Handle("/api/", http.StripPrefix("/api", api.Handler()))
 	handler.Handle("/", app.Handler())
 
-	log.Print("Listening on ", *port)
+	envPort := os.Getenv("PORT")
+	if envPort != "" {
+		*port = fmt.Sprintf(":%s", envPort)
+	}
+
+	createDbCmd(args)
+	go importCmd(args)
 	err := http.ListenAndServe(*port, handler)
 	if err != nil {
 		log.Fatal(err.Error())

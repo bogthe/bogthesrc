@@ -67,7 +67,7 @@ func getPost(url string) (*bogthesrc.Post, error) {
 		return nil, err
 	}
 
-	if hn.Type != "story" || hn.Url == "" {
+	if hn == nil || hn.Type != "story" || hn.Url == "" {
 		return nil, nil
 	}
 

@@ -1,1 +1,1 @@
-web: bin/bogthesrc serve
+web: bin/bogthesrc serve 
