@@ -54,8 +54,8 @@ The options are:
 }
 
 func main() {
-	flag.Parse()
 	log.Println("DID IT BOYS")
+	flag.Parse()
 	if flag.NArg() == 0 {
 		flag.Usage()
 	}
