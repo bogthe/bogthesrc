@@ -31,7 +31,7 @@ var cmds = []subcmd{
 
 func init() {
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, `bogthesrc is web news and link server. (copy of thesrc)
+		fmt.Fprintf(os.Stderr, `bogthesrc is altered web news and link server. (copy of thesrc)
 Usage
 	bogthesrc [options] command [arg...]
 
