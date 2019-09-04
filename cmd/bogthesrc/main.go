@@ -31,7 +31,7 @@ var cmds = []subcmd{
 
 func init() {
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, `bogthesrc is altered web news and link server. (copy of thesrc)
+		fmt.Fprintf(os.Stderr, `bogthesrc is web news and link server. (copy of thesrc)
 Usage
 	bogthesrc [options] command [arg...]
 
@@ -114,6 +114,7 @@ The options are:
 	handler.Handle("/api/", http.StripPrefix("/api", api.Handler()))
 	handler.Handle("/", app.Handler())
 
+	*port = os.Getenv("PORT")
 	log.Print("Listening on ", *port)
 	err := http.ListenAndServe(*port, handler)
 	if err != nil {
