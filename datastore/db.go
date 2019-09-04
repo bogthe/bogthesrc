@@ -16,7 +16,8 @@ var connectOnce sync.Once
 func Connect() {
 	connectOnce.Do(func() {
 		var err error
-		DB.Dbx, err = sqlx.Open("postgres", "")
+		url := os.GetEnv("DATABASE_URL")
+		DB.Dbx, err = sqlx.Open("postgres", url)
 		if err != nil {
 			log.Fatalf("Error connecting to Postgres DB using PG* env: %s", err)
 		}
