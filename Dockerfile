@@ -1,9 +1,21 @@
-FROM golang:1.12-alpine
-RUN apk update && apk upgrade && \
-    apk add --no-cache bash git openssh && \
-    apk add build-base
+FROM heroku/heroku:18-build as build
 
-RUN go get github.com/cespare/reflex
-COPY reflex.conf /
-ENTRYPOINT ["reflex", "-c", "/reflex.conf"]
+COPY . /app
+WORKDIR /app
 
+# Setup buildpack
+RUN mkdir -p /tmp/buildpack/heroku/go /tmp/build_cache /tmp/env
+RUN curl https://codon-buildpacks.s3.amazonaws.com/buildpacks/heroku/go.tgz | tar xz -C /tmp/buildpack/heroku/go
+
+#Execute Buildpack
+RUN STACK=heroku-18 /tmp/buildpack/heroku/go/bin/compile /app /tmp/build_cache /tmp/env
+
+# Prepare final, minimal image
+FROM heroku/heroku:18
+
+COPY --from=build /app /app
+ENV HOME /app
+WORKDIR /app
+RUN useradd -m heroku
+USER heroku
+CMD /app/bin/bogthesrc serve
