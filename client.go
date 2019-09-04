@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"reflect"
 	"strings"
 
@@ -64,8 +65,15 @@ func NewClient(client *http.Client) *Client {
 		client = http.DefaultClient
 	}
 
+	envPort := os.Getenv("PORT")
+	if envPort != "" {
+		envPort = fmt.Sprintf("localhost:%s", envPort)
+	} else {
+		envPort = "localhost:5000"
+	}
+
 	return &Client{
-		BaseUrl:    &url.URL{Scheme: "http", Host: "localhost:5000", Path: "/api/"},
+		BaseUrl:    &url.URL{Scheme: "http", Host: envPort, Path: "/api/"},
 		UserAgent:  userAgent,
 		httpClient: client,
 	}
