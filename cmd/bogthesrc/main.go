@@ -119,6 +119,8 @@ The options are:
 		*port = fmt.Sprintf(":%s", envPort)
 	}
 
+	createDbCmd(args)
+	go importCmd(args)
 	err := http.ListenAndServe(*port, handler)
 	if err != nil {
 		log.Fatal(err.Error())
